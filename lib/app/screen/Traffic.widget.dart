@@ -20,6 +20,7 @@ class _TrafficWidgetState extends State<TrafficWidget> {
       GlobalKey<ScaffoldMessengerState>();
 
   Future getImage() async {
+    // lay image tu thiet bi, tra ve XFile bao boc anh
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     setState(() {
       if (pickedFile != null) {
@@ -31,6 +32,7 @@ class _TrafficWidgetState extends State<TrafficWidget> {
   }
 
   Future getImageInCamera() async {
+    //ImageSource = [gallery: thiet bi, camera: may anh]
     final pickedFile = await picker.pickImage(source: ImageSource.camera);
     setState(() {
       if (pickedFile != null) {
@@ -44,9 +46,11 @@ class _TrafficWidgetState extends State<TrafficWidget> {
   Future<String?> uploadImage() async {
     if (_image == null) return null;
 
-    var uri = Uri.parse('http://192.168.1.8:8080/upload');
+    var uri = Uri.parse('http://localhost:8080/upload');
+    //MultipartRequest: chuyen data nhieu phan nhu img, tep tin
     var request = http.MultipartRequest('POST', uri)
       ..files.add(
+        // tạo đối tượng từ đường dẫn cụ thể
         await http.MultipartFile.fromPath(
           'image',
           _image!.path,
@@ -71,6 +75,7 @@ class _TrafficWidgetState extends State<TrafficWidget> {
   Widget build(BuildContext context) {
     Size display = MediaQuery.of(context).size;
     return ScaffoldMessenger(
+      // quan li snackBar
       key: _scaffoldMessengerKey,
       child: Scaffold(
         appBar: AppBar(
@@ -121,7 +126,7 @@ class _TrafficWidgetState extends State<TrafficWidget> {
                             right: 0,
                             top: 0,
                             child: IconButton(
-                              icon: Icon(Icons.close, color: Colors.red),
+                              icon: const Icon(Icons.close, color: Colors.red),
                               onPressed: () {
                                 setState(() {
                                   _image = null;
@@ -134,7 +139,6 @@ class _TrafficWidgetState extends State<TrafficWidget> {
               ),
               GestureDetector(
                 onTap: () async {
-                  await uploadImage();
                   String? trafficSignName = await uploadImage();
                   if (trafficSignName != null) {
                     // ignore: use_build_context_synchronously
