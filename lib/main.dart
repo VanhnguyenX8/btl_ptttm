@@ -1,7 +1,6 @@
 import 'package:btl_ptttm/app/database/database.dart';
 import 'package:btl_ptttm/app/screen/traffic_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -5,7 +5,7 @@
 <uses-permission android:name="MANAGE_STORAGE"/>
    <uses-permission android:name="android.permission.CAMERA" />
     <application
-        android:label="btl_ptttm"
+        android:label="Biển báo giao thông"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

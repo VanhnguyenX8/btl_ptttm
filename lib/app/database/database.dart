@@ -6,22 +6,28 @@ import 'package:path/path.dart';
 
 class SqfliteDatabase {
   static final SqfliteDatabase _singleton = SqfliteDatabase._internal();
+  // đảm bảo chỉ db trong toàn ứng dụng
   factory SqfliteDatabase() {
     return _singleton;
   }
+  // contructor
   SqfliteDatabase._internal();
 
   late Database db;
 
   Future initDb() async {
     final dbPath = await getDatabasesPath();
+    // lay ten database trong duong dan
     final path = join(dbPath, "database.db");
     final exist = await databaseExists(path);
     if (!exist) {
       try {
+        // nếu chưa có db thì nó tự tạo
         await Directory(dirname(path)).create(recursive: true);
       } catch (_) {}
       ByteData data = await rootBundle.load(join("assets", "database.db"));
+      // chuyển sang 8 bit
+
       List<int> bytes =
           data.buffer.asInt8List(data.offsetInBytes, data.lengthInBytes);
       await File(path).writeAsBytes(bytes, flush: true);

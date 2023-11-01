@@ -143,10 +143,12 @@ class _TrafficWidgetState extends State<TrafficWidget> {
                             style: TextStyle(
                                 color: Color(0xFF060A2C),
                                 fontWeight: FontWeight.bold,
-                                fontSize: 12),
+                                fontSize: 25),
                           ),
-                          content: Text(trafficSign
-                              .name), // Sử dụng tên từ đối tượng Traffic
+                          content: Text(
+                            trafficSign.name,
+                            style: const TextStyle(fontSize: 20),
+                          ), // Sử dụng tên từ đối tượng Traffic
                           actions: [
                             TextButton(
                               child: const Text(
@@ -154,7 +156,7 @@ class _TrafficWidgetState extends State<TrafficWidget> {
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 12),
+                                    fontSize: 15),
                               ),
                               onPressed: () {
                                 Navigator.of(context).pop();

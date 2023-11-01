@@ -37,6 +37,9 @@ class _TrafficListScreenState extends State<TrafficListScreen> {
               itemBuilder: (context, index) {
                 final traffic = trafficList?[index];
                 return Card(
+
+                  elevation: 0.5,
+                   shadowColor: Color(0xFF8BC1FC),
                   margin: const EdgeInsets.all(8),
                   child: ListTile(
                     title: Text(traffic!.name),
@@ -44,14 +47,16 @@ class _TrafficListScreenState extends State<TrafficListScreen> {
                       padding: const EdgeInsets.all(3.0),
                       child: Container(
                         decoration: BoxDecoration(
+                          // borderRadius: const BorderRadius.all(Radius.circular(20)),
                           border: Border.all(
-                            color: const Color(0xFF8BC1FC), // Màu đường viền
-                            width: 1.0, // Độ rộng của đường viền
+                            color: const Color(0xFF8BC1FC),
+                            width: 1.0,
                           ),
                         ),
                         child: CachedNetworkImage(
-                          width: 50,
-                          height: 50,
+                            width: 50,
+                            // height: 50,
+                            fit: BoxFit.fitWidth,
                             progressIndicatorBuilder:
                                 (context, url, progress) => Center(
                                       child: CircularProgressIndicator(
@@ -59,7 +64,7 @@ class _TrafficListScreenState extends State<TrafficListScreen> {
                                       ),
                                     ),
                             imageUrl:
-                                'http://192.168.1.15:8080/public${traffic.link}'),
+                                'http://192.168.81.150:8080/public${traffic.link}'),
                       ),
                     ),
                     trailing: IconButton(
@@ -70,7 +75,7 @@ class _TrafficListScreenState extends State<TrafficListScreen> {
                       },
                       icon: const Icon(
                         Icons.delete,
-                        color: Color(0xffFFFFFF),
+                        color: Colors.red,
                       ),
                     ),
                   ),

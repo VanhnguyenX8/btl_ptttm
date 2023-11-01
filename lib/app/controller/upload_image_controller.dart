@@ -9,7 +9,7 @@ class UploadImageController {
   Future<Traffic?> uploadImage(File? image) async {
     if (image == null) return null;
 
-    var uri = Uri.parse('http://192.168.1.15:8080/upload');
+    var uri = Uri.parse('http://192.168.81.150:8080/upload');
     var request = http.MultipartRequest('POST', uri)
       ..files.add(
         await http.MultipartFile.fromPath(
@@ -27,7 +27,6 @@ class UploadImageController {
 
       try {
         var jsonData = jsonDecode(responseBody);
-        print('Thông tin: ${jsonData['name']}');
         return Traffic.fromJson(jsonData);
       } catch (e) {
         print('Lỗi parse JSON: $e');
