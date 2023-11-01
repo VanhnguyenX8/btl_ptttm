@@ -10,7 +10,6 @@ class SqfliteDatabase {
   factory SqfliteDatabase() {
     return _singleton;
   }
-  // contructor
   SqfliteDatabase._internal();
 
   late Database db;
@@ -21,10 +20,11 @@ class SqfliteDatabase {
     final path = join(dbPath, "database.db");
     final exist = await databaseExists(path);
     if (!exist) {
-      try {
-        // nếu chưa có db thì nó tự tạo
-        await Directory(dirname(path)).create(recursive: true);
-      } catch (_) {}
+      // try {
+      //   // nếu chưa có db thì nó tự tạo
+      //   await Directory(dirname(path)).create(recursive: true);
+      // } catch (_) {}
+
       ByteData data = await rootBundle.load(join("assets", "database.db"));
       // chuyển sang 8 bit
 
