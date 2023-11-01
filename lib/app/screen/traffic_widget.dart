@@ -1,15 +1,16 @@
-import 'dart:convert';
 import 'dart:io';
+import 'package:btl_ptttm/app/database/database.dart';
+import 'package:btl_ptttm/app/model/traffic.dart';
+import 'package:btl_ptttm/app/screen/traffic_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
-// ignore: depend_on_referenced_packages
-import 'package:http_parser/http_parser.dart';
+import 'package:btl_ptttm/app/controller/upload_image_controller.dart';
 
 class TrafficWidget extends StatefulWidget {
   const TrafficWidget({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _TrafficWidgetState createState() => _TrafficWidgetState();
 }
 
@@ -18,12 +19,13 @@ class _TrafficWidgetState extends State<TrafficWidget> {
   final picker = ImagePicker();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
+  final uploadImageController = UploadImageController();
 
   Future getImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     setState(() {
       if (pickedFile != null) {
-        _image = File(pickedFile.path); // Cập nhật _image
+        _image = File(pickedFile.path);
       } else {
         print('Chưa chọn ảnh nào.');
       }
@@ -34,37 +36,20 @@ class _TrafficWidgetState extends State<TrafficWidget> {
     final pickedFile = await picker.pickImage(source: ImageSource.camera);
     setState(() {
       if (pickedFile != null) {
-        _image = File(pickedFile.path); // Cập nhật _image
+        _image = File(pickedFile.path);
       } else {
         print('Chưa chọn ảnh nào.');
       }
     });
   }
 
-  Future<String?> uploadImage() async {
-    if (_image == null) return null;
-
-    var uri = Uri.parse('http://192.168.1.8:8080/upload');
-    var request = http.MultipartRequest('POST', uri)
-      ..files.add(
-        await http.MultipartFile.fromPath(
-          'image',
-          _image!.path,
-          contentType: MediaType('image', 'jpeg'),
-        ),
-      );
-    var response = await request.send();
-
-    if (response.statusCode == 200) {
-      var responseBody = await response.stream.bytesToString();
-      print('Response body: $responseBody');
-      var jsonData = jsonDecode(responseBody);
-      print('Thông tin: ${jsonData['name']}');
-      return jsonData['name']; // Trả về tên biển báo
-    } else {
-      print('Tải lỗi: ${response.statusCode}.');
-      return null;
+  Future<Traffic?> uploadImage() async {
+    Traffic? trafficSign = await uploadImageController.uploadImage(_image);
+    if (trafficSign != null) {
+      // Chèn dữ liệu vào cơ sở dữ liệu SQLite
+      await SqfliteDatabase().insertTrafficData(trafficSign);
     }
+    return trafficSign;
   }
 
   @override
@@ -74,6 +59,18 @@ class _TrafficWidgetState extends State<TrafficWidget> {
       key: _scaffoldMessengerKey,
       child: Scaffold(
         appBar: AppBar(
+          leading: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => TrafficListScreen()),
+              );
+            },
+            child: const Icon(
+              Icons.history,
+              color: Colors.white,
+            ),
+          ),
           toolbarHeight: 90,
           backgroundColor: const Color(0xFF8BC1FC),
           title: const Text(
@@ -121,7 +118,7 @@ class _TrafficWidgetState extends State<TrafficWidget> {
                             right: 0,
                             top: 0,
                             child: IconButton(
-                              icon: Icon(Icons.close, color: Colors.red),
+                              icon: const Icon(Icons.close, color: Colors.red),
                               onPressed: () {
                                 setState(() {
                                   _image = null;
@@ -134,31 +131,30 @@ class _TrafficWidgetState extends State<TrafficWidget> {
               ),
               GestureDetector(
                 onTap: () async {
-                  await uploadImage();
-                  String? trafficSignName = await uploadImage();
-                  if (trafficSignName != null) {
+                  Traffic? trafficSign = await uploadImage();
+                  if (trafficSign != null) {
                     // ignore: use_build_context_synchronously
                     await showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text(
+                          title: const Text(
                             'Tên biển báo',
                             style: TextStyle(
-                                color: const Color(0xFF060A2C),
+                                color: Color(0xFF060A2C),
                                 fontWeight: FontWeight.bold,
-                                fontSize: display.width * 0.043),
+                                fontSize: 12),
                           ),
-                          content: Text(
-                              trafficSignName), // Sử dụng biến trafficSignName ở đây
+                          content: Text(trafficSign
+                              .name), // Sử dụng tên từ đối tượng Traffic
                           actions: [
                             TextButton(
-                              child: Text(
+                              child: const Text(
                                 'Cancel',
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: display.width * 0.043),
+                                    fontSize: 12),
                               ),
                               onPressed: () {
                                 Navigator.of(context).pop();
